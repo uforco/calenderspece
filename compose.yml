@@ -1,0 +1,68 @@
+services:
+  kafka:
+    image: apache/kafka:latest
+    container_name: kafka
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_NODE_ID: 1
+      KAFKA_PROCESS_ROLES: broker,controller
+
+      KAFKA_LISTENERS: >
+        PLAINTEXT://0.0.0.0:9092,
+        PLAINTEXT_INTERNAL://0.0.0.0:29092,
+        CONTROLLER://0.0.0.0:9093
+
+      KAFKA_ADVERTISED_LISTENERS: >
+        PLAINTEXT://localhost:9092,
+        PLAINTEXT_INTERNAL://kafka:29092
+
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: >
+        PLAINTEXT:PLAINTEXT,
+        PLAINTEXT_INTERNAL:PLAINTEXT,
+        CONTROLLER:PLAINTEXT
+
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:9093
+
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+
+  kafka-ui:
+    image: provectuslabs/kafka-ui:latest
+    ports:
+      - "8080:8080"
+    environment:
+      KAFKA_CLUSTERS_0_NAME: local
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:29092
+    depends_on:
+      - kafka
+
+  nginx-server:
+    image: nginx:stable-alpine3.23
+    container_name: nginx-load-balancer
+    ports:
+      - "80:80"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/rootpage:/usr/share/nginx/html:ro
+    # command: [nginx-debug, '-g', 'daemon off;']
+    restart: unless-stopped
+
+  user-db:
+    image: postgres:18.1-alpine3.23
+    container_name: postgres-user-db
+    ports:
+      - '5435:5432'
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: admin_userdb
+      POSTGRES_PASSWORD: admin_userdb
+      POSTGRES_DB: userdb
+
+volumes:
+  pgdata:

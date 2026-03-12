@@ -1,0 +1,467 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Micro Service Architecture Project</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Fira Code", "Courier New", monospace;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        background: linear-gradient(#01001c, #020010);
+        background-size: 600% 600%;
+        color: #e0e0ff;
+        overflow-x: hidden;
+      }
+
+      .headline {
+        text-align: center;
+        padding: 3.5rem 1.5rem 1.5rem;
+        font-size: 3.4rem;
+        font-weight: 900;
+        color: #1abc9c;
+        text-shadow:
+          0 0 20px rgba(26, 188, 156, 0.6),
+          0 0 40px rgba(26, 188, 156, 0.3);
+        letter-spacing: 1.5px;
+      }
+
+      .services-intro {
+        padding: 1rem 1.5rem 4rem;
+        max-width: 1100px;
+        margin: 0 auto;
+        text-align: center;
+      }
+
+      .services-title {
+        font-size: 2rem;
+        color: #1abc9c;
+        margin-bottom: 1.4rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.7rem;
+      }
+
+      .services-description {
+        font-size: 1.15rem;
+        color: #c0c0e0;
+        margin: 0 auto 2.5rem;
+        max-width: 760px;
+        line-height: 1.7;
+      }
+
+      .services-grid {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 2rem;
+      }
+
+      .service-card {
+        background: rgba(30, 30, 50, 0.75);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(26, 188, 156, 0.22);
+        border-radius: 14px;
+        padding: 2rem 1.8rem;
+        width: 100%;
+        max-width: 440px;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+        transition: all 0.35s ease;
+        position: relative;
+      }
+
+      .service-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 16px 40px rgba(0, 0, 0, 0.65);
+        border-color: rgba(231, 76, 60, 0.5);
+      }
+
+      .service-card h3 {
+        font-size: 1.55rem;
+        color: #1abc9c;
+        margin-bottom: 1.1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+      }
+
+      .status-indicator {
+        font-size: 1.1rem;
+        font-weight: bold;
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        margin: 1rem 0;
+        text-align: center;
+      }
+
+      .status-ok {
+        background: rgba(46, 204, 113, 0.25);
+        color: #2ecc71;
+        border: 1px solid #2ecc71;
+      }
+      .status-warn {
+        background: rgba(241, 196, 15, 0.25);
+        color: #f1c40f;
+        border: 1px solid #f1c40f;
+      }
+      .status-error {
+        background: rgba(231, 76, 60, 0.25);
+        color: #e74c3c;
+        border: 1px solid #e74c3c;
+      }
+
+      .health-details {
+        font-size: 0.9rem;
+        color: #b0b0d8;
+        margin-top: 0.8rem;
+        line-height: 1.5;
+      }
+
+      .btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.6rem;
+        background: rgba(26, 188, 156, 0.2);
+        color: #1abc9c;
+        border: 1px solid rgba(26, 188, 156, 0.45);
+        border-radius: 10px;
+        padding: 0.9rem 1.4rem;
+        margin: 0.6rem 0;
+        font-weight: 600;
+        text-decoration: none;
+        transition: all 0.3s;
+        width: 100%;
+        font-size: 1rem;
+      }
+
+      .btn:hover {
+        background: rgba(26, 188, 156, 0.4);
+        color: white;
+        border-color: #1abc9c;
+        transform: translateY(-3px);
+      }
+
+      .tech-stack-section {
+        padding: 2rem 1.5rem 5rem;
+        text-align: center;
+        flex: 1;
+      }
+
+      .section-title {
+        font-size: 2.1rem;
+        color: #1abc9c;
+        margin-bottom: 2.8rem;
+      }
+
+      .tech-grid {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 1.3rem 1.8rem;
+        max-width: 1400px;
+        margin: 0 auto;
+      }
+
+      .tech-item {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        min-width: 110px;
+        height: 72px;
+        padding: 0.9rem 1.2rem;
+        background: rgba(30, 30, 50, 0.7);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(26, 188, 156, 0.2);
+        border-radius: 12px;
+        transition: all 0.3s;
+      }
+
+      .tech-item:hover {
+        transform: translateY(-6px);
+        border-color: rgba(231, 76, 60, 0.5);
+      }
+
+      .tech-item img {
+        width: 52px;
+        height: 52px;
+        object-fit: contain;
+      }
+
+      .tech-title {
+        font-size: 1rem;
+        font-weight: 600;
+        color: #e0e0ff;
+      }
+
+      footer {
+        background: rgba(10, 10, 30, 0.65);
+        backdrop-filter: blur(12px);
+        text-align: center;
+        padding: 1.8rem;
+        color: #a0a0d0;
+        border-top: 1px solid rgba(26, 188, 156, 0.18);
+      }
+
+      @media (max-width: 768px) {
+        .headline {
+          font-size: 2.5rem;
+          padding: 2.8rem 1rem 1.2rem;
+        }
+        .services-grid {
+          flex-direction: column;
+          gap: 1.8rem;
+        }
+        .service-card {
+          max-width: 100%;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="headline">Micro Service Architecture</div>
+
+    <!-- Services Section with live health data -->
+    <section class="services-intro">
+      <h2 class="services-title">🚀 User & Order Services</h2>
+
+      <p class="services-description">
+        This project implements a modern
+        <strong>microservices architecture</strong> with two core services:
+      </p>
+
+      <div class="services-grid">
+        <!-- User Service Card -->
+        <div class="service-card" id="user-card">
+          <h3>🧑‍💻 User Service</h3>
+          <p style="margin: 0.9rem 0 1.2rem; color: #b0b0d8">
+            Handles user registration, authentication, profiles and related
+            operations.
+          </p>
+          <div class="status-indicator" id="user-status">Loading health...</div>
+          <div class="health-details" id="user-details"></div>
+          <a href="/user/doc" class="btn"> 📖 View User Swagger Docs </a>
+        </div>
+
+        <!-- Order Service Card -->
+        <div class="service-card" id="order-card">
+          <h3>📦 Order Service</h3>
+          <p style="margin: 0.9rem 0 1.2rem; color: #b0b0d8">
+            Manages orders, order history, status tracking and processing logic.
+          </p>
+          <div class="status-indicator" id="order-status">
+            Loading health...
+          </div>
+          <div class="health-details" id="order-details"></div>
+          <a href="/order/doc" class="btn"> 📖 View Order Swagger Docs </a>
+        </div>
+
+        <!-- Products Service Card -->
+        <div class="service-card" id="product-card">
+          <h3>📦 Product Service</h3>
+          <p style="margin: 0.9rem 0 1.2rem; color: #b0b0d8">
+            Manages product, product history, status tracking and processing
+            logic.
+          </p>
+          <div class="status-indicator" id="product-status">
+            Loading health...
+          </div>
+          <div class="health-details" id="product-details"></div>
+          <a href="/product/doc" class="btn"> 📖 View product Swagger Docs </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Tech Stack Section -->
+    <section class="tech-stack-section">
+      <h2 class="section-title">Tech Stack Overview</h2>
+      <div class="tech-grid">
+        <!-- Your tech items here (same as before) -->
+        <div class="tech-item">
+          <img src="/icons/Nest.js.png" alt="Nest.js" /><span class="tech-title"
+            >Nest.js</span
+          >
+        </div>
+        <div class="tech-item">
+          <img src="/icons/ApacheKafka.png" alt="Apache Kafka" /><span
+            class="tech-title"
+            >Apache Kafka</span
+          >
+        </div>
+        <div class="tech-item">
+          <img src="/icons/NGINX.png" alt="NGINX" /><span class="tech-title"
+            >NGINX</span
+          >
+        </div>
+        <div class="tech-item">
+          <img src="/icons/Cloudflare.png" alt="Cloudflare" /><span
+            class="tech-title"
+            >Cloudflare</span
+          >
+        </div>
+        <div class="tech-item">
+          <img src="/icons/Kubernetes.png" alt="Kubernetes" /><span
+            class="tech-title"
+            >Kubernetes</span
+          >
+        </div>
+        <div class="tech-item">
+          <img src="/icons/Docker.png" alt="Docker" /><span class="tech-title"
+            >Docker</span
+          >
+        </div>
+        <div class="tech-item">
+          <img src="/icons/GraphQL.png" alt="GraphQL" /><span class="tech-title"
+            >GraphQL</span
+          >
+        </div>
+        <div class="tech-item">
+          <img src="/icons/Angular.png" alt="Angular" /><span class="tech-title"
+            >Angular</span
+          >
+        </div>
+        <div class="tech-item">
+          <img src="/icons/Linux.png" alt="Linux" /><span class="tech-title"
+            >Linux</span
+          >
+        </div>
+        <div class="tech-item">
+          <img src="/icons/MongoDB.png" alt="MongoDB" /><span class="tech-title"
+            >MongoDB</span
+          >
+        </div>
+        <div class="tech-item">
+          <img src="/icons/MySQL.png" alt="MySQL" /><span class="tech-title"
+            >MySQL</span
+          >
+        </div>
+        <div class="tech-item">
+          <img src="/icons/PostgresSQL.png" alt="PostgreSQL" /><span
+            class="tech-title"
+            >PostgreSQL</span
+          >
+        </div>
+        <div class="tech-item">
+          <img src="/icons/Next.js.png" alt="Nextjs" /><span class="tech-title"
+            >Next.js</span
+          >
+        </div>
+        <div class="tech-item">
+          <img src="/icons/Redis.png" alt="Redis" /><span class="tech-title"
+            >Redis</span
+          >
+        </div>
+        <div class="tech-item">
+          <img src="/icons/Socket.io.png" alt="Socket.io" /><span
+            class="tech-title"
+            >Socket.io</span
+          >
+        </div>
+        <div class="tech-item">
+          <img src="/icons/OpenAPI.png" alt="OpenAPI" /><span class="tech-title"
+            >OpenAPI</span
+          >
+        </div>
+      </div>
+    </section>
+
+    <footer>© 2026 Micro Service Architecture Project</footer>
+
+    <!-- JavaScript to fetch and display health data -->
+    <script>
+      const BASE_URL = window.location.href;
+
+      async function fetchHealth(service) {
+        try {
+          const response = await fetch(`${BASE_URL}/${service}/health`);
+          if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+          const data = await response.json();
+          return { success: true, data };
+        } catch (err) {
+          return { success: false, error: err.message };
+        }
+      }
+
+      function updateCard(service, result) {
+        const statusEl = document.getElementById(`${service}-status`);
+        const detailsEl = document.getElementById(`${service}-details`);
+        const card = document.getElementById(`${service}-card`);
+
+        if (!result.success) {
+          statusEl.textContent = "ERROR";
+          statusEl.className = "status-indicator status-error";
+          detailsEl.innerHTML = `Failed to connect: ${result.error}`;
+          return;
+        }
+
+        const { status, info = {}, details = {} } = result.data;
+
+        // Overall status
+        let statusText = status === "ok" ? "HEALTHY" : "DEGRADED";
+        let statusClass = status === "ok" ? "status-ok" : "status-warn";
+
+        // Count failed checks
+        const failedChecks = Object.values(info).filter(
+          (item) => item.status !== "up",
+        ).length;
+        if (failedChecks > 0) {
+          statusText += ` (${failedChecks} issues)`;
+          statusClass = "status-warn";
+        }
+
+        statusEl.textContent = statusText;
+        statusEl.className = `status-indicator ${statusClass}`;
+
+        // Show main details
+        let detailHTML = "";
+        const importantChecks = [
+          "disk",
+          "memory_heap",
+          "memory_rss",
+          "application-pingCheck",
+        ];
+
+        importantChecks.forEach((key) => {
+          if (info[key]) {
+            const st = info[key].status;
+            const icon = st === "up" ? "✅" : "⚠️";
+            detailHTML += `<div>${icon} ${key.replace("_", " ")}: ${st}</div>`;
+          }
+        });
+
+        detailsEl.innerHTML =
+          detailHTML || "<div>No detailed info available</div>";
+      }
+
+      async function checkHealth(service = null) {
+        if (!service || service === "user") {
+          const userResult = await fetchHealth("user");
+          updateCard("user", userResult);
+        }
+        if (!service || service === "order") {
+          const orderResult = await fetchHealth("order");
+          updateCard("order", orderResult);
+        }
+        if (!service || service === "product") {
+          const orderResult = await fetchHealth("product");
+          updateCard("product", orderResult);
+        }
+      }
+
+      // Load health data when page opens
+      window.addEventListener("load", () => {
+        checkHealth();
+      });
+    </script>
+  </body>
+</html>
