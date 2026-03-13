@@ -13,7 +13,6 @@ export class AppController {
 
   @Post('singup')
   singup(@Body() data: CreateAuthDto) {
-    console.log(data);
-    return data;
+    return this.appService.singup(data);
   }
 }
