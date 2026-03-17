@@ -24,23 +24,34 @@ export class DbconfigService implements OnModuleDestroy {
       // console.log('file location', cwd());
       const client = await this.pool.connect();
       await client.query(`CREATE EXTENSION IF NOT EXISTS "uuid-ossp";`);
+      await client.query(
+        `DO $$
+          BEGIN
+              IF NOT EXISTS (
+                  SELECT 1 FROM pg_type WHERE typname = 'auth_provider'
+              ) THEN
+                  CREATE TYPE auth_provider AS ENUM ('credentials', 'google', 'facebook', 'github');
+              END IF;
+          END
+          $$;`,
+      );
+
+      const cc = await this.query('create.user.sql', [
+        'sharif67',
+        'credentials',
+        'password',
+        'srka780@gmail.com',
+      ]);
+
+      console.log(cc);
+
       this.logger.log('Database connected successfully ✅');
       client.release();
-    } catch {
+    } catch (e) {
+      console.log(e);
       this.logger.log(`Error connecting to DB-user ❌`);
       console.log('Error connecting to DB-user ❌');
     }
-  }
-
-  private async createTable(): Promise<void> {
-    const sqlfile = await this.sqlPath('create.table.sql');
-    await this.pool.query(sqlfile);
-  }
-
-  private async sqlPath(fileName: string) {
-    const path = join(cwd(), 'sql', fileName);
-    const sqlfile = await readFile(path, 'utf8');
-    return sqlfile;
   }
 
   async query(
@@ -48,13 +59,15 @@ export class DbconfigService implements OnModuleDestroy {
     params?: any[],
   ): Promise<any[] | void | undefined | null> {
     try {
-      await this.createTable(); // Ensure table exists before query
+      await this.createTable('create.user.table.sql'); // Ensure table exists before query
+      await this.createTable('create.email.table.sql'); // Ensure table exists before query
 
       const sql = await this.sqlPath(fileName);
       const result = await this.pool.query(sql, params);
       this.logger.log(`Executed query from ${fileName}`);
       return result.rows.length ? result.rows : null;
     } catch (e) {
+      // console.log(e);
       this.sqlException(e as Error);
       return null;
     }
@@ -93,6 +106,17 @@ export class DbconfigService implements OnModuleDestroy {
     if (!match) return null;
     const [, field] = match;
     return field;
+  }
+
+  private async createTable(fileName: string): Promise<void> {
+    const sqlfile = await this.sqlPath(fileName);
+    await this.pool.query(sqlfile);
+  }
+
+  private async sqlPath(fileName: string) {
+    const path = join(cwd(), 'sql', fileName);
+    const sqlfile = await readFile(path, 'utf8');
+    return sqlfile;
   }
 
   async onModuleDestroy() {

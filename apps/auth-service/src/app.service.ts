@@ -10,11 +10,8 @@ export class AppService {
     return 'Hello World!';
   }
   async singup(data: CreateAuthDto) {
-    const createUser = await this.db.query('create.user.sql', [
-      data.name,
-      data.email,
-      data.password,
-    ]);
+    console.log(data);
+    const createUser = await this.db.query('create.user.sql', [data.email]);
     if (createUser?.length == 0 || !createUser)
       throw new NotFoundException('user not created');
     return {
