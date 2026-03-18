@@ -36,14 +36,12 @@ export class DbconfigService implements OnModuleDestroy {
           $$;`,
       );
 
-      const cc = await this.query('create.user.sql', [
-        'sharif67',
-        'credentials',
-        'password',
-        'srka780@gmail.com',
-      ]);
-
-      console.log(cc);
+      // const cc = await this.query('create.user.sql', [
+      //   'sharif67',
+      //   'credentials',
+      //   'password',
+      //   'srka780@gmail.com',
+      // ]);
 
       this.logger.log('Database connected successfully ✅');
       client.release();
@@ -54,10 +52,7 @@ export class DbconfigService implements OnModuleDestroy {
     }
   }
 
-  async query(
-    fileName: string,
-    params?: any[],
-  ): Promise<any[] | void | undefined | null> {
+  async query(fileName: string, params?: any[]) {
     try {
       await this.createTable('create.user.table.sql'); // Ensure table exists before query
       await this.createTable('create.email.table.sql'); // Ensure table exists before query
@@ -65,6 +60,21 @@ export class DbconfigService implements OnModuleDestroy {
       const sql = await this.sqlPath(fileName);
       const result = await this.pool.query(sql, params);
       this.logger.log(`Executed query from ${fileName}`);
+      return result.rows.length ? result.rows : null;
+    } catch (e) {
+      // console.log(e);
+      this.sqlException(e as Error);
+      return null;
+    }
+  }
+
+  async rawQuery(qurey: string, params?: any[]) {
+    try {
+      await this.createTable('create.user.table.sql'); // Ensure table exists before query
+      await this.createTable('create.email.table.sql'); // Ensure table exists before query
+
+      const result = await this.pool.query(qurey, params);
+      this.logger.log(`Executed query from ${qurey}`);
       return result.rows.length ? result.rows : null;
     } catch (e) {
       // console.log(e);

@@ -1,6 +1,6 @@
 import { Body, Controller, Get, Post } from '@nestjs/common';
 import { AppService } from './app.service';
-import { CreateAuthDto } from './dto/create-auth.dto';
+import { CreateAuthDto, SingIn } from './dto/create-auth.dto';
 
 @Controller()
 export class AppController {
@@ -14,5 +14,10 @@ export class AppController {
   @Post('singup')
   singup(@Body() data: CreateAuthDto) {
     return this.appService.singup(data);
+  }
+
+  @Post('singin')
+  singin(@Body() data: SingIn) {
+    return this.appService.singin(data);
   }
 }
