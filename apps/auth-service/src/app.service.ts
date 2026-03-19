@@ -2,15 +2,20 @@ import {
   ConflictException,
   Injectable,
   NotFoundException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { CreateAuthDto, SingIn } from './dto/create-auth.dto';
 import { DbconfigService } from './dbconfig/dbconfig.service';
 import * as argon2 from 'argon2';
 import { LogInUserType } from './types/login.type';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class AppService {
-  constructor(private readonly db: DbconfigService) {}
+  constructor(
+    private readonly db: DbconfigService,
+    private readonly jwt: JwtService,
+  ) {}
 
   getHello(): string {
     return 'Hello World!';
@@ -57,15 +62,16 @@ export class AppService {
       [data.email],
     );
     if (!user || user.length == 0) {
-      throw new NotFoundException({
+      throw new UnauthorizedException({
         message: 'User not found with this email',
         error: 'USER_NOT_FOUND',
         data: null,
       });
     }
-    const isMatch = await argon2.verify(user[0].password, data.password);
+    const { password, ...res } = user[0];
+    const isMatch = await argon2.verify(password, data.password);
     if (!isMatch) {
-      throw new NotFoundException({
+      throw new UnauthorizedException({
         message: 'invalid credentials',
         error: 'invalid credentials',
         data: null,
@@ -73,7 +79,11 @@ export class AppService {
     }
 
     // create JWT Oparetions
+    const token = await this.jwt.signAsync(res);
 
-    return user;
+    return {
+      access_token: `Bearer_${token}`,
+      data: res,
+    };
   }
 }
