@@ -1,0 +1,1 @@
+SELECT secret_key FROM secretkey WHERE secret_key = $1

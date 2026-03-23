@@ -5,7 +5,9 @@ import * as crypto from 'crypto';
 
 @Injectable()
 export class SecretkeyService {
-  create(createSecretkeyDto: CreateSecretkeyDto) {
+  constructor(private readonly ) {}
+
+  create(createSecretkeyDto: CreateSecretkeyDto, user_id: string) {
     const secretKey = crypto.randomBytes(32).toString('base64url');
     return { ...createSecretkeyDto, secretKey };
   }

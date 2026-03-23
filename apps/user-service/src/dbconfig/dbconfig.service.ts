@@ -52,12 +52,10 @@ export class DbconfigService implements OnModuleDestroy {
     }
   }
 
-  async query(fileName: string, params?: any[]) {
+  async query(fileName: string, pathName: string, params?: any[]) {
     try {
-      await this.createTable('create.user.table.sql'); // Ensure table exists before query
-      await this.createTable('create.email.table.sql'); // Ensure table exists before query
-
-      const sql = await this.sqlPath(fileName);
+      await this.initialTable();
+      const sql = await this.sqlPath(fileName, pathName);
       const result = await this.pool.query(sql, params);
       this.logger.log(`Executed query from ${fileName}`);
       return result.rows.length ? result.rows : null;
@@ -70,8 +68,7 @@ export class DbconfigService implements OnModuleDestroy {
 
   async rawQuery(qurey: string, params?: any[]) {
     try {
-      await this.createTable('create.user.table.sql'); // Ensure table exists before query
-      await this.createTable('create.email.table.sql'); // Ensure table exists before query
+      await this.initialTable();
 
       const result = await this.pool.query(qurey, params);
       this.logger.log(`Executed query from ${qurey}`);
@@ -81,6 +78,11 @@ export class DbconfigService implements OnModuleDestroy {
       this.sqlException(e as Error);
       return null;
     }
+  }
+
+  // initial DB
+  private async initialTable() {
+    await this.createTable('create.table.sql', 'secretkey'); // Ensure table exists before query
   }
 
   private sqlException(e: Error) {
@@ -118,13 +120,17 @@ export class DbconfigService implements OnModuleDestroy {
     return field;
   }
 
-  private async createTable(fileName: string): Promise<void> {
-    const sqlfile = await this.sqlPath(fileName);
+  private async createTable(
+    fileName: string,
+    pathName?: string,
+  ): Promise<void> {
+    const sqlfile = await this.sqlPath(fileName, pathName);
     await this.pool.query(sqlfile);
   }
 
-  private async sqlPath(fileName: string) {
-    const path = join(cwd(), 'sql', fileName);
+  private async sqlPath(fileName: string, pathName?: string) {
+    const pname = pathName ? `sql/${pathName}` : 'sql';
+    const path = join(cwd(), pname, fileName);
     const sqlfile = await readFile(path, 'utf8');
     return sqlfile;
   }

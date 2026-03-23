@@ -7,11 +7,13 @@ import {
   Param,
   Delete,
   Req,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { SecretkeyService } from './secretkey.service';
 import { CreateSecretkeyDto } from './dto/create-secretkey.dto';
 import { UpdateSecretkeyDto } from './dto/update-secretkey.dto';
 import { Request } from 'express';
+import { UserType } from './types/x_user.type';
 
 @Controller('secretkey')
 export class SecretkeyController {
@@ -19,17 +21,18 @@ export class SecretkeyController {
 
   @Post()
   create(@Body() createSecretkeyDto: CreateSecretkeyDto, @Req() req: Request) {
-    // console.log('SecretKeyName', data);
     const ht = JSON.stringify(req.headers['x-user']);
-    // console.log(ht);
     const authUSer = JSON.parse(ht) as string;
-    const sKey = this.secretkeyService.create(createSecretkeyDto);
+    const userInfo = JSON.parse(authUSer) as UserType;
 
-    const ss = JSON.parse(authUSer) as object;
+    if (!userInfo || (userInfo && !userInfo.id))
+      throw new UnauthorizedException();
 
-    console.log({ ...ss, ...sKey });
+    const sKey = this.secretkeyService.create(createSecretkeyDto, userInfo.id);
 
-    return { ...ss, ...sKey };
+    console.log({ ...userInfo });
+
+    return sKey;
   }
 
   @Get()

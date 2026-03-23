@@ -1,0 +1,6 @@
+CREATE TABLE IF NOT EXISTS secretkey (
+    id UUID PRIMARY KEY UUID_GENERATE_V4 (),
+    name VARCHAR(255) NOT NULL,
+    user_id UUID NOT NULL,
+    secret_key VARCHAR(255) NOT NULL UNIQUE,
+)
