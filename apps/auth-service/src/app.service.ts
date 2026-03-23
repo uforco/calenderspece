@@ -57,13 +57,15 @@ export class AppService {
   }
 
   async singin(data: SingIn) {
+    console.log(data);
     const user: LogInUserType[] | null = await this.db.query(
       'singin.user.sql',
       [data.email],
     );
+    console.log(user);
     if (!user || user.length == 0) {
       throw new UnauthorizedException({
-        message: 'User not found with this email',
+        message: 'User not found with this email =========',
         error: 'USER_NOT_FOUND',
         data: null,
       });

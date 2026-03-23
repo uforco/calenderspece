@@ -14,7 +14,7 @@ import { LoginGuard } from './GUARDS/login/login.guard';
     JwtModule.register({
       global: true,
       secret: process.env.ACCESS_TOKEN,
-      signOptions: { expiresIn: '1h' },
+      signOptions: { expiresIn: '6h' },
     }),
     DbconfigModule,
   ],

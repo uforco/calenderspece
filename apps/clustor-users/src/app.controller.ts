@@ -7,6 +7,7 @@ export class AppController {
 
   @Get()
   getHello(): string {
+    console.log('user clustor');
     return this.appService.getHello();
   }
 }

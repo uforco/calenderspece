@@ -6,6 +6,8 @@ export type JwtPayload = {
   varify: boolean; // (you probably meant "verify")
   createdat: Date;
   updateat: Date | null;
+  iat: string | number;
+  exp: string | number;
 };
 
 export type LogInUserType = {

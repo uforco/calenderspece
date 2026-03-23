@@ -7,7 +7,6 @@ export class VerifyService {
   constructor(private readonly db: DbconfigService) {}
 
   async verify(data: JwtPayload) {
-    console.log('verify - user system', data);
     if (!data) return { message: 'user not found' };
     const user: LogInUserType[] | null = await this.db.query(
       'singin.user.sql',
@@ -16,6 +15,6 @@ export class VerifyService {
     if (!user || user.length == 0) {
       throw new UnauthorizedException();
     }
-    return data;
+    return user[0];
   }
 }
