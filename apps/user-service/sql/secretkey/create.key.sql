@@ -1,5 +1,9 @@
 INSERT INTO
-    secretkey (name, user_id, secret_key)
+    secretkey (
+        secretkeyName,
+        user_id,
+        secretkeyValue
+    )
 VALUES ($1, $2, $3)
 RETURNING
     *

@@ -1,0 +1,1 @@
+SELECT * FROM secretkey WHERE user_id = $1

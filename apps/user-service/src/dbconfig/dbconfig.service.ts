@@ -36,12 +36,8 @@ export class DbconfigService implements OnModuleDestroy {
           $$;`,
       );
 
-      // const cc = await this.query('create.user.sql', [
-      //   'sharif67',
-      //   'credentials',
-      //   'password',
-      //   'srka780@gmail.com',
-      // ]);
+      await this.initialTable();
+      // this.rawQuery(`DROP TABLE secretkey;`);
 
       this.logger.log('Database connected successfully ✅');
       client.release();
@@ -60,8 +56,9 @@ export class DbconfigService implements OnModuleDestroy {
       this.logger.log(`Executed query from ${fileName}`);
       return result.rows.length ? result.rows : null;
     } catch (e) {
-      // console.log(e);
-      this.sqlException(e as Error);
+      console.log('=============Error==========');
+      console.log(e);
+      // this.sqlException(e as Error);
       return null;
     }
   }

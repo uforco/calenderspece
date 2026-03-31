@@ -2,17 +2,26 @@ import { Injectable } from '@nestjs/common';
 import { CreateSecretkeyDto } from './dto/create-secretkey.dto';
 import { UpdateSecretkeyDto } from './dto/update-secretkey.dto';
 import * as crypto from 'crypto';
+import { DbconfigService } from 'src/dbconfig/dbconfig.service';
 
 @Injectable()
 export class SecretkeyService {
-  constructor(private readonly ) {}
+  constructor(private readonly db: DbconfigService) {}
 
-  create(createSecretkeyDto: CreateSecretkeyDto, user_id: string) {
-    const secretKey = crypto.randomBytes(32).toString('base64url');
-    return { ...createSecretkeyDto, secretKey };
+  async create(createSecretkeyDto: CreateSecretkeyDto, user_id: string) {
+    const secretKey = crypto.randomBytes(64).toString('base64url');
+    const saveData = await this.db.query('create.key.sql', 'secretkey', [
+      createSecretkeyDto.name,
+      user_id,
+      secretKey,
+    ]);
+    return saveData;
   }
 
-  findAll() {
+  async getSecretKeys(user_id: string) {
+    console.log(user_id);
+    const getKeys = await this.db.query('get.keys.sql', 'secretkey', [user_id]);
+    console.log(getKeys);
     return `This action returns all secretkey`;
   }
 
@@ -21,6 +30,7 @@ export class SecretkeyService {
   }
 
   update(id: number, updateSecretkeyDto: UpdateSecretkeyDto) {
+    console.log(updateSecretkeyDto);
     return `This action updates a #${id} secretkey`;
   }
 
